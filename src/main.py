@@ -1,3 +1,10 @@
+"""
+@file main.py
+@author Reyane Redjem
+@brief Application de planning Poker 
+
+"""
+
 import pygame
 
 pygame.init()
