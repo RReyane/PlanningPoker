@@ -1,28 +1,30 @@
-import tkinter as tk
+import pygame
+
+pygame.init()
+
+screen_info = pygame.display.Info()
+width = int(screen_info.current_w * 0.8)
+height = int(screen_info.current_h * 0.8)
+ECRAN = pygame.display.set_mode((width, height))
+
+def get_font(taille): 
+    return pygame.font.Font("assets/font/Browood-Regular.ttf", taille)
+
+def menuPrincipale():
+   while True:
+      ECRAN.fill("#4d4a52")
+
+      TEXT_MENU = get_font(80).render("Planning Poker !", True, "#d9c7c7")
+      TEXT_MENU_RECT = TEXT_MENU.get_rect(center = (width//2,50))
 
 
-def create_new_game():
-   print("Nouvelle partie")
+      ECRAN.blit(TEXT_MENU,TEXT_MENU_RECT)
 
-def resume_game():
-   print("Reprendre une partie")
+      for event in pygame.event.get():
+         if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+   
+      pygame.display.flip()
 
-
-# Créer la fenêtre principale
-fenetre = tk.Tk()
-fenetre.title("Planning Poker")
-x = int((fenetre.winfo_screenwidth()/2) - 400)
-fenetre.geometry("800x800+{}+0".format(x))
-
-# Créer une étiquette pour afficher le message de bienvenue
-message = tk.Label(fenetre, text="Bienvenue dans Planning Poker !",bg="black",fg="white", height= 3,width=50, font=("Courrier", 18))
-message.pack(pady=100)
-
-new_game_button = tk.Button(fenetre, text="Nouvelle partie", command=create_new_game,width=30, height=10, bg='orange')
-new_game_button.pack(side="left",expand=True)
-
-resume_game_button = tk.Button(fenetre, text="Reprendre une partie", command=resume_game,width=30, height=10, bg='orange')
-resume_game_button.pack(side="left",expand=True)
-
-# Lancer la boucle principale de Tkinter
-fenetre.mainloop()
+menuPrincipale()
