@@ -1,3 +1,5 @@
+import pygame
+
 class Button():
     """
     @class Représente un bouton graphique avec la possibilité de changement de couleur au survol.
@@ -57,3 +59,43 @@ class Button():
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render(self.text_input, True, self.base_color)
+
+
+class InputBox:
+
+    def __init__(self, x, y, w, h, font, text=''):
+        self.originalW = w
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = "white"
+        self.font = font
+        self.text = text
+        self.txt_surface = self.font.render(text, True, self.color)
+        self.active = False
+
+    def handle_event(self, event, posMouse):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(posMouse):
+                # Toggle the active variable.
+                self.active = True
+            else:
+                self.active = False
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                
+
+
+    def update(self, screen):
+        # Re-render the text.
+        self.txt_surface = self.font.render(self.text, True, self.color)
+        # Resize the box if the text is too long.
+        width = max(self.originalW, self.txt_surface.get_width()+10)
+        self.rect.w = width
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        # Blit the rect.
+        pygame.draw.rect(screen, self.color, self.rect, 2)
