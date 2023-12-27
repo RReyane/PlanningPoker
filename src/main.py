@@ -46,8 +46,7 @@ def Parametres():
       input_box.update(Fenetre)
 
       input_box_button = Button(pos=(380, 115), text_input="Ok", font=get_font(40), base_color="#f8d4fc", hovering_color="#bb7ec2")
-      input_box_button.changeColor(param_MousePos)
-      input_box_button.update(Fenetre)
+      
 
       dropdown_typeJeu_Text = get_font(40).render("Regle du poker:", True, "#f8d4fc")
       dropdown_typeJeu_Text_rect = input_text_box.get_rect(center = (150,300))
@@ -55,10 +54,20 @@ def Parametres():
 
       dropDown_typeJeu.update(Fenetre)
 
+      LancerPartie_Button = Button((400,(Fenetre.get_height()//4)*3),"Lancer partie",get_font(60),"#ed402d","#a61808")
+
+      for button in [input_box_button,LancerPartie_Button]:
+         button.changeColor(param_MousePos)
+         button.update(Fenetre)
+
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+         input_box.handle_event(event,param_MousePos)
+         selected_option = dropDown_typeJeu.handle_event(event,param_MousePos)
+         if selected_option >= 0:
+            dropDown_typeJeu.texteDefaut = dropDown_typeJeu.Listeoptions[selected_option]
          elif event.type == pygame.MOUSEBUTTONDOWN:
             if input_box_button.checkForInput(param_MousePos):
                if input_box.text != '':
@@ -66,10 +75,9 @@ def Parametres():
                   liste_joueur.append(new_text_surface)
                   input_box.text = ''
                input_box.update(Fenetre)
-         input_box.handle_event(event,param_MousePos)
-         selected_option = dropDown_typeJeu.handle_event(event,param_MousePos)
-         if selected_option >= 0:
-            dropDown_typeJeu.texteDefaut = dropDown_typeJeu.Listeoptions[selected_option]
+            if LancerPartie_Button.checkForInput(param_MousePos):
+               if len(liste_joueur) >= 2 and dropDown_typeJeu.option_active >=0:
+                  Game(liste_joueur,dropDown_typeJeu.option_active)
 
       x_pos = Fenetre.get_width() //2 
       y_pos = 115
@@ -85,6 +93,9 @@ def Parametres():
 
 
 def Charger():
+   print()
+
+def Game(Joueurs, Type):
    print()
 
 def menuPrincipale():
