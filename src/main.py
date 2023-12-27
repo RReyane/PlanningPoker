@@ -6,6 +6,7 @@
 """
 
 import pygame
+import json
 import sys
 from UIobjects import Button, InputBox, DropDown
 
@@ -24,6 +25,31 @@ def get_font(taille):
    @return La police avec la bonne taille
    """
    return pygame.font.Font("assets/font/Browood-Regular.ttf", taille)
+
+def lireBacklog():
+   #Lire le json
+   with open('../json/backlog.json', 'r') as file:
+      data = json.load(file)
+
+   # Liste pour stocker les informations de chaque élément du backlog
+   backlog_items = []
+    
+    # Parcours de chaque élément du backlog
+   for item in data['backlog']:
+      # Stockage des informations dans un dictionnaire
+      backlog_item = {
+         "id": item['id'],
+         "feature": item['feature'],
+         "description": item['description']
+      }
+        
+      # Ajout du dictionnaire à la liste
+      backlog_items.append(backlog_item)
+        
+   return backlog_items
+
+def saveJson(backlog_items,listeJoueurs,type,indexFeature,nbRound,Vote):
+   print()
 
 def Parametres():
    input_box = InputBox(45,80,300,60,get_font(40))
@@ -89,8 +115,6 @@ def Parametres():
             y_pos += Joueur.get_height() + 10
 
       pygame.display.flip()
-
-
 
 def Charger():
    print()
