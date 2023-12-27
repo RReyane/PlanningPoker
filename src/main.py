@@ -7,7 +7,7 @@
 
 import pygame
 import sys
-from UIobjects import Button, InputBox
+from UIobjects import Button, InputBox, DropDown
 
 pygame.init()
 
@@ -28,6 +28,8 @@ def get_font(taille):
 def Parametres():
    input_box = InputBox(45,80,300,60,get_font(40))
    liste_joueur = []
+   dropDown_typeJeu = DropDown(45,335,300,60,get_font(40),"strict",["strict","moyenne","majoriteRelat"])
+
    while True:
       param_MousePos = pygame.mouse.get_pos()
 
@@ -47,18 +49,27 @@ def Parametres():
       input_box_button.changeColor(param_MousePos)
       input_box_button.update(Fenetre)
 
+      dropdown_typeJeu_Text = get_font(40).render("Regle du poker:", True, "#f8d4fc")
+      dropdown_typeJeu_Text_rect = input_text_box.get_rect(center = (150,300))
+      Fenetre.blit(dropdown_typeJeu_Text,dropdown_typeJeu_Text_rect)
+
+      dropDown_typeJeu.update(Fenetre)
+
       for event in pygame.event.get():
          if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
          elif event.type == pygame.MOUSEBUTTONDOWN:
             if input_box_button.checkForInput(param_MousePos):
-               new_text_surface = get_font(40).render(input_box.text, True, "#f8d4fc")
-               liste_joueur.append(new_text_surface)
-               input_box.text = ''
+               if input_box.text != '':
+                  new_text_surface = get_font(40).render(input_box.text, True, "#f8d4fc")
+                  liste_joueur.append(new_text_surface)
+                  input_box.text = ''
                input_box.update(Fenetre)
          input_box.handle_event(event,param_MousePos)
-
+         selected_option = dropDown_typeJeu.handle_event(event,param_MousePos)
+         if selected_option >= 0:
+            dropDown_typeJeu.texteDefaut = dropDown_typeJeu.Listeoptions[selected_option]
 
       x_pos = Fenetre.get_width() //2 
       y_pos = 115

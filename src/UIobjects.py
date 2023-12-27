@@ -1,6 +1,6 @@
 import pygame
 
-class Button():
+class Button:
     """
     @class Représente un bouton graphique avec la possibilité de changement de couleur au survol.
 
@@ -66,7 +66,7 @@ class InputBox:
     def __init__(self, x, y, w, h, font, text=''):
         self.originalW = w
         self.rect = pygame.Rect(x, y, w, h)
-        self.color = "white"
+        self.color = "gray"
         self.font = font
         self.text = text
         self.txt_surface = self.font.render(text, True, self.color)
@@ -91,11 +91,57 @@ class InputBox:
 
     def update(self, screen):
         # Re-render the text.
-        self.txt_surface = self.font.render(self.text, True, self.color)
+        self.txt_surface = self.font.render(self.text, True, "black")
         # Resize the box if the text is too long.
         width = max(self.originalW, self.txt_surface.get_width()+10)
         self.rect.w = width
-        # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+        pygame.draw.rect(screen, self.color, self.rect, 0)
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y))
+
+
+class DropDown:
+    def __init__(self, x, y, w, h, font, defaut, options):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.font = font
+        self.texteDefaut = defaut
+        self.Listeoptions = options
+        self.draw_menu = False
+        self.menu_active = False
+        self.option_active = -1
+
+    def update(self, fenetre):
+        pygame.draw.rect(fenetre, "gray", self.rect, 0)
+        msg = self.font.render(self.texteDefaut, True, "black")
+        fenetre.blit(msg, msg.get_rect(center = self.rect.center))
+
+        if self.draw_menu:
+            for i, text in enumerate(self.Listeoptions):
+                rect = self.rect.copy()
+                rect.y += (i+1) * self.rect.height
+                pygame.draw.rect(fenetre, "white", rect, 0)
+                msg = self.font.render(text, 1, "black")
+                fenetre.blit(msg, msg.get_rect(center = rect.center))
+    
+    def handle_event(self, event, posMouse):
+        self.menu_active = self.rect.collidepoint(posMouse)
+        
+        self.option_active = -1
+        for i in range(len(self.Listeoptions)):
+            rect = self.rect.copy()
+            rect.y += (i+1) * self.rect.height
+            if rect.collidepoint(posMouse):
+                self.option_active = i
+                break
+
+        if not self.menu_active and self.option_active == -1:
+            self.draw_menu = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.menu_active:
+                self.draw_menu = not self.draw_menu
+            elif self.draw_menu and self.option_active >= 0:
+                self.draw_menu = False
+                return self.option_active
+        return -1
