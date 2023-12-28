@@ -127,7 +127,6 @@ class DropDown:
     def handle_event(self, event, posMouse):
         self.menu_active = self.rect.collidepoint(posMouse)
         
-        self.option_active = -1
         for i in range(len(self.Listeoptions)):
             rect = self.rect.copy()
             rect.y += (i+1) * self.rect.height

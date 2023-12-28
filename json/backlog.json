@@ -1,0 +1,25 @@
+{
+    "backlog": [
+      {
+        "id": 1,
+        "feature": "Ajouter une fonction de recherche",
+        "description": "Permet aux utilisateurs de rechercher des elements dans l'application."
+      },
+      {
+        "id": 2,
+        "feature": "Integrer une gestion des utilisateurs",
+        "description": "Ajoute un systeme d'authentification et de gestion des comptes utilisateurs."
+      },
+      {
+        "id": 3,
+        "feature": "Optimiser la performance de l'application",
+        "description": "Ameliore la vitesse et l'efficacite de l'application."
+      },
+      {
+        "id": 4,
+        "feature": "Ajouter une fonction de messagerie",
+        "description": "Permet aux utilisateurs de communiquer entre eux via une messagerie integree."
+      }
+    ]
+  }
+  
