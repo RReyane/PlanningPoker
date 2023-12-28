@@ -403,6 +403,7 @@ def Discussion(listeJoueur,tour1=False):
 
       pygame.display.flip()
 
+
 def menuPrincipale():
    """! Boucle du menu principale au lancement du programme."""
 
