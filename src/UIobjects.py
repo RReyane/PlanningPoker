@@ -110,6 +110,7 @@ class DropDown:
         self.draw_menu = False
         self.menu_active = False
         self.option_active = -1
+        self.option_choisie = -1
 
     def update(self, fenetre):
         pygame.draw.rect(fenetre, "gray", self.rect, 0)
@@ -142,5 +143,6 @@ class DropDown:
                 self.draw_menu = not self.draw_menu
             elif self.draw_menu and self.option_active >= 0:
                 self.draw_menu = False
+                self.option_choisie = self.option_active
                 return self.option_active
         return -1

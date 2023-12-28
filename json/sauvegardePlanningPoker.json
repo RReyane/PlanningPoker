@@ -1,11 +1,12 @@
 {
     "PlanningPoker": {
-        "type": "majoriteAbsolue",
+        "type": "strict",
         "joueurs": [
             "Reyane",
-            "Evan"
+            "Tom",
+            "Philipe"
         ],
-        "IndexFeatureCourante": "Fini"
+        "IndexFeatureCourante": 2
     },
     "backlog": [
         {
@@ -18,19 +19,17 @@
             "id": 2,
             "feature": "Integrer une gestion des utilisateurs",
             "description": "Ajoute un systeme d'authentification et de gestion des comptes utilisateurs.",
-            "Difficulte": 8
+            "Difficulte": 5
         },
         {
             "id": 3,
             "feature": "Optimiser la performance de l'application",
-            "description": "Ameliore la vitesse et l'efficacite de l'application.",
-            "Difficulte": 13
+            "description": "Ameliore la vitesse et l'efficacite de l'application."
         },
         {
             "id": 4,
             "feature": "Ajouter une fonction de messagerie",
-            "description": "Permet aux utilisateurs de communiquer entre eux via une messagerie integree.",
-            "Difficulte": 20
+            "description": "Permet aux utilisateurs de communiquer entre eux via une messagerie integree."
         }
     ]
 }

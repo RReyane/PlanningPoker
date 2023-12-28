@@ -58,25 +58,32 @@ def saveJson(backlog_items,listeJoueurs,typeJeu,indexFeature,votes):
       case 1:
          typeJeu = 'moyenne'
       case 2:
-         typeJeu = 'majoriteAbsolue'
+         typeJeu = 'majoriteRelative'
    data['PlanningPoker'] = {
        'type': typeJeu,
        'joueurs': [joueur.nom for joueur in listeJoueurs],
-       'IndexFeatureCourante': indexFeature if indexFeature > len(backlog_items) else 'Fini'
+       'IndexFeatureCourante': indexFeature if indexFeature < len(backlog_items) else 'Fini'
    }
 
    data['backlog'] = []
    for i,item in enumerate(backlog_items):
        # Créer un nouveau dictionnaire pour chaque item
-       backlog_item = {
-           'id': item['id'],
-           'feature': item['feature'],
-           'description': item['description'],
-           'Difficulte': votes[i] if i < indexFeature else None
-       }
+      if i < indexFeature:
+         backlog_item = {
+            'id': item['id'],
+            'feature': item['feature'],
+            'description': item['description'],
+            'Difficulte': votes[i]
+         }
+      else:
+         backlog_item = {
+            'id': item['id'],
+            'feature': item['feature'],
+            'description': item['description']
+         }
 
        # Ajouter le dictionnaire à la liste 'backlog'
-       data['backlog'].append(backlog_item)
+      data['backlog'].append(backlog_item)
    
    # Sauvegarder l'objet JSON dans un fichier
    with open('./json/sauvegardePlanningPoker.json', 'w') as file:
@@ -132,8 +139,8 @@ def Parametres():
                   input_box.text = ''
                input_box.update(Fenetre)
             if LancerPartie_Button.checkForInput(param_MousePos):
-               if len(liste_joueur) >= 2 and dropDown_typeJeu.option_active >=0:
-                  Game(liste_joueur,dropDown_typeJeu.option_active)
+               if len(liste_joueur) >= 2 and dropDown_typeJeu.option_choisie >=0:
+                  Game(liste_joueur,dropDown_typeJeu.option_choisie)
 
       x_pos = Fenetre.get_width() //2 
       y_pos = 115
@@ -148,21 +155,39 @@ def Parametres():
       pygame.display.flip()
 
 def Charger():
-   print()
+   with open('./json/sauvegardePlanningPoker.json', 'r') as file:
+      data = json.load(file)
 
-def Game(Joueurs, TypeJeu):
+   typeJeu = data['PlanningPoker']['type']
+   match typeJeu:
+      case 'strict':
+         typeJeu = 0
+      case 'moyenne':
+         typeJeu = 1
+      case 'majoriteRelative':
+         typeJeu = 2
+   joueurs = data['PlanningPoker']['joueurs']
+   indexFeature = data['PlanningPoker']['IndexFeatureCourante']
+   backlog_items = data['backlog']
+   votes = []
+   for i, item in enumerate(backlog_items):
+      if i < indexFeature:
+         votes.append(item['Difficulte'])
+
+   Game(joueurs,typeJeu,indexFeature,votes,backlog_items)
+
+def Game(Joueurs, TypeJeu, activeTask=0,listeVoteChoisie = [],backlog=None):
    ListeObjJoueurs= []
    for joueur in Joueurs:
       ListeObjJoueurs.append(player(joueur))
 
    listeCartes = Cartes(100,150)
 
-   listeVoteChoisie = []
-
    tour = 1
-   backlog = lireBacklog()
+   
+   if backlog == None:
+      backlog = lireBacklog()
    maxTask = len(backlog)
-   activeTask = 0
    activeJoueurNb = 0
 
    while True:
@@ -355,5 +380,4 @@ def menuPrincipale():
    
       pygame.display.flip()
 
-#menuPrincipale()
-Game(["Reyane","Evan"], 2)
+menuPrincipale()
