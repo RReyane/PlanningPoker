@@ -43,14 +43,44 @@ def lireBacklog():
          "feature": item['feature'],
          "description": item['description']
       }
-        
+         
       # Ajout du dictionnaire à la liste
       backlog_items.append(backlog_item)
         
    return backlog_items
 
-def saveJson(backlog_items,listeJoueurs,type,indexFeature):
-   print()
+def saveJson(backlog_items,listeJoueurs,typeJeu,indexFeature,votes):
+   data = {}
+
+   match typeJeu:
+      case 0:
+         typeJeu = 'strict'
+      case 1:
+         typeJeu = 'moyenne'
+      case 2:
+         typeJeu = 'majoriteAbsolue'
+   data['PlanningPoker'] = {
+       'type': typeJeu,
+       'joueurs': [joueur.nom for joueur in listeJoueurs],
+       'IndexFeatureCourante': indexFeature if indexFeature > len(backlog_items) else 'Fini'
+   }
+
+   data['backlog'] = []
+   for i,item in enumerate(backlog_items):
+       # Créer un nouveau dictionnaire pour chaque item
+       backlog_item = {
+           'id': item['id'],
+           'feature': item['feature'],
+           'description': item['description'],
+           'Difficulte': votes[i] if i < indexFeature else None
+       }
+
+       # Ajouter le dictionnaire à la liste 'backlog'
+       data['backlog'].append(backlog_item)
+   
+   # Sauvegarder l'objet JSON dans un fichier
+   with open('./json/sauvegardePlanningPoker.json', 'w') as file:
+       json.dump(data, file, indent=4)
 
 def Parametres():
    input_box = InputBox(45,80,300,60,get_font(40))
@@ -127,6 +157,8 @@ def Game(Joueurs, TypeJeu):
 
    listeCartes = Cartes(100,150)
 
+   listeVoteChoisie = []
+
    tour = 1
    backlog = lireBacklog()
    maxTask = len(backlog)
@@ -144,11 +176,11 @@ def Game(Joueurs, TypeJeu):
                   if j.carteChoisie != carteComparaison:
                      egal = False
             if egal == True:
-               saveJson(backlog,ListeObjJoueurs,TypeJeu,activeTask)
+               saveJson(backlog,ListeObjJoueurs,TypeJeu,activeTask,listeVoteChoisie)
                pygame.quit()
                sys.exit()
          if tour == 1:
-            Discussion(ListeObjJoueurs)
+            Discussion(ListeObjJoueurs,True)
             activeJoueurNb=0
             tour +=1
          elif TypeJeu == 0: #typeJeu = strict
@@ -162,7 +194,7 @@ def Game(Joueurs, TypeJeu):
                activeJoueurNb=0
                tour+=1
             else:
-               print("ECRIRE DANS LE JSON LA CARTE CORREPSONDANT A CETTE TACHE")
+               listeVoteChoisie.append(ListeObjJoueurs[0].cartes[carteComparaison])
                activeJoueurNb=0
                tour = 1
                activeTask +=1
@@ -172,7 +204,7 @@ def Game(Joueurs, TypeJeu):
                if j.cartes[j.carteChoisie] >=0:
                   moyenne += j.cartes[j.carteChoisie]
             moyenne /= len(ListeObjJoueurs)+1
-            print("ECRIRE DANS LE JSON LA CARTE CORREPSONDANT A CETTE TACHE")
+            listeVoteChoisie.append(moyenne)
             activeJoueurNb=0
             tour = 1
             activeTask +=1
@@ -186,12 +218,14 @@ def Game(Joueurs, TypeJeu):
                      cpt_vote[j.cartes[j.carteChoisie]] = 1
             
             majorite = False
-            for _,cpt in cpt_vote.items():
+            chosenCard = None
+            for c,cpt in cpt_vote.items():
                if cpt >= len(ListeObjJoueurs)//2 +1:
                   majorite = True
+                  chosenCard = c
             
             if majorite:
-               print("ECRIRE DANS LE JSON LA CARTE CORREPSONDANT A CETTE TACHE")
+               listeVoteChoisie.append(chosenCard)
                activeJoueurNb=0
                tour = 1
                activeTask +=1
@@ -199,6 +233,11 @@ def Game(Joueurs, TypeJeu):
                Discussion(ListeObjJoueurs)
                activeJoueurNb=0
                tour+=1
+
+      if activeTask >= maxTask:
+         saveJson(backlog,ListeObjJoueurs,TypeJeu,activeTask,listeVoteChoisie)
+         pygame.quit()
+         sys.exit()
 
       cpt_Tour = get_font(70).render("Tour " + str(tour), True, "#d9c7c7")
       cpt_Tour_rect = cpt_Tour.get_rect(center = (Fenetre.get_width()//2,50))
@@ -222,10 +261,6 @@ def Game(Joueurs, TypeJeu):
          offset+= 120
 
 
-      
-
-
-
       Game_MousePos = pygame.mouse.get_pos()
 
       for event in pygame.event.get():
@@ -244,13 +279,35 @@ def Game(Joueurs, TypeJeu):
       pygame.display.flip()
 
 
-def Discussion(listeJoueur):
+def Discussion(listeJoueur,tour1=False):
    Discute = True
+   dict_carte = {0:'0',1:'1',2:'2',3:'3',4:'5',5:'8',6:'13',7:'20',8:'40',9:'100',10:'?'}
    while Discute:
       Fenetre.fill("#4d4a52")
+      
+      if not tour1:
+         cartePlus = 0
+         carteMoins = 10
+         for joueur in listeJoueur:
+            if joueur.carteChoisie != 11:
+               if joueur.carteChoisie < carteMoins:
+                  carteMoins = joueur.carteChoisie
+               if joueur.carteChoisie> cartePlus:
+                  cartePlus = joueur.carteChoisie
 
+         texte_carte_plus = get_font(60).render("La plus grande carte est "+ dict_carte[cartePlus], True, "#d9c7c7")
+         texte_carte_plus_rect = texte_carte_plus.get_rect(center = (Fenetre.get_width()//2,(Fenetre.get_height()//4)*1))
+         Fenetre.blit(texte_carte_plus,texte_carte_plus_rect)
 
-      finDiscussion_button = Button(pos=(Fenetre.get_width()//2, (Fenetre.get_height()//3)*2), text_input="Fin", font=get_font(70), base_color="#f8d4fc", hovering_color="#bb7ec2")
+         texte_carte_moins = get_font(60).render("La plus petite carte est " + dict_carte[carteMoins], True, "#d9c7c7")
+         texte_carte_moins_rect = texte_carte_moins.get_rect(center = (Fenetre.get_width()//2,(Fenetre.get_height()//4)*2))
+         Fenetre.blit(texte_carte_moins,texte_carte_moins_rect)
+      else:
+         texte_T1 = get_font(90).render("C'est le tour 1, discuter !", True, "#d9c7c7")
+         texte_T1_rect = texte_T1.get_rect(center = (Fenetre.get_width()//2,Fenetre.get_height()//2))
+         Fenetre.blit(texte_T1,texte_T1_rect)
+
+      finDiscussion_button = Button(pos=(Fenetre.get_width()//2, (Fenetre.get_height()//4)*3), text_input="Fin", font=get_font(70), base_color="#f8d4fc", hovering_color="#bb7ec2")
       
       Dsicussion_MousePos = pygame.mouse.get_pos()
 
@@ -275,7 +332,6 @@ def menuPrincipale():
 
       Text_menu = get_font(90).render("Planning Poker !", True, "#d9c7c7")
       Text_menu_rect = Text_menu.get_rect(center = (Fenetre.get_width()//2,50))
-
       Fenetre.blit(Text_menu,Text_menu_rect)
 
       Play_button = Button(pos=(Fenetre.get_width()//2, Fenetre.get_height()//2-60), text_input="Jouer", font=get_font(70), base_color="#f8d4fc", hovering_color="#bb7ec2")
