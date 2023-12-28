@@ -62,8 +62,31 @@ class Button:
 
 
 class InputBox:
+    """
+    @class Représente une boîte de saisie permettant à l'utilisateur d'entrer du texte.
+
+    Attributes:
+        originalW (int): La largeur d'origine de la boîte de saisie.
+        rect (pygame.Rect): Le rectangle délimitant la boîte de saisie.
+        color (str): La couleur de fond de la boîte de saisie.
+        font (pygame.font.Font): La police d'écriture utilisée pour le texte de la boîte.
+        text (str): Le texte actuel dans la boîte de saisie.
+        txt_surface (pygame.Surface): La surface représentant le texte rendu avec la police et la couleur actuelles.
+        active (bool): Indique si la boîte de saisie est actuellement active (sélectionnée).
+    """
 
     def __init__(self, x, y, w, h, font, text=''):
+        """
+        Initialise un objet InputBox.
+
+        Args:
+        @param x (int): La position horizontale de la boîte de saisie.
+        @param y (int): La position verticale de la boîte de saisie.
+        @param w (int): La largeur initiale de la boîte de saisie.
+        @param h (int): La hauteur de la boîte de saisie.
+        @param font (pygame.font.Font): La police d'écriture à utiliser.
+        @param text (str): Le texte initial dans la boîte de saisie.
+        """
         self.originalW = w
         self.rect = pygame.Rect(x, y, w, h)
         self.color = "gray"
@@ -73,6 +96,13 @@ class InputBox:
         self.active = False
 
     def handle_event(self, event, posMouse):
+        """
+        Gère les événements de la boîte de saisie.
+
+        Args:
+        @param event (pygame.event.Event): L'événement pygame à traiter.
+        @param posMouse (tuple): La position actuelle de la souris (x, y).
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(posMouse):
@@ -90,6 +120,12 @@ class InputBox:
 
 
     def update(self, screen):
+        """
+        Met à jour l'affichage de la boîte de saisie sur l'écran.
+
+        Args:
+        @param screen (pygame.Surface): La surface d'affichage sur laquelle dessiner la boîte de saisie.
+        """
         # Re-render the text.
         self.txt_surface = self.font.render(self.text, True, "black")
         # Resize the box if the text is too long.
@@ -102,7 +138,33 @@ class InputBox:
 
 
 class DropDown:
+    """
+    @class Représente une liste déroulante avec des options sélectionnables.
+
+    Attributes:
+        rect (pygame.Rect): Le rectangle délimitant la liste déroulante.
+        font (pygame.font.Font): La police d'écriture utilisée pour le texte de la liste.
+        texteDefaut (str): Le texte affiché par défaut.
+        Listeoptions (list): La liste des options disponibles.
+        draw_menu (bool): Indique si le menu déroulant doit être dessiné.
+        menu_active (bool): Indique si la liste déroulante est actuellement active (sélectionnée).
+        option_active (int): L'indice de l'option actuellement survolée.
+        option_choisie (int): L'indice de l'option choisie.
+    """
+
     def __init__(self, x, y, w, h, font, defaut, options):
+        """
+        Initialise un objet DropDown.
+
+        Args:
+        @param x (int): La position horizontale de la liste déroulante.
+        @param y (int): La position verticale de la liste déroulante.
+        @param w (int): La largeur de la liste déroulante.
+        @param h (int): La hauteur de la liste déroulante.
+        @param font (pygame.font.Font): La police d'écriture à utiliser.
+        @param defaut (str): Le texte affiché par défaut.
+        @param options (list): La liste des options disponibles.
+        """
         self.rect = pygame.Rect(x, y, w, h)
         self.font = font
         self.texteDefaut = defaut
@@ -113,6 +175,12 @@ class DropDown:
         self.option_choisie = -1
 
     def update(self, fenetre):
+        """
+        Met à jour l'affichage de la liste déroulante sur l'écran.
+
+        Args:
+        @param fenetre (pygame.Surface): La surface d'affichage sur laquelle dessiner la liste déroulante.
+        """
         pygame.draw.rect(fenetre, "gray", self.rect, 0)
         msg = self.font.render(self.texteDefaut, True, "black")
         fenetre.blit(msg, msg.get_rect(center = self.rect.center))
@@ -126,6 +194,16 @@ class DropDown:
                 fenetre.blit(msg, msg.get_rect(center = rect.center))
     
     def handle_event(self, event, posMouse):
+        """
+        Gère les événements de la liste déroulante.
+
+        Args:
+        @param event (pygame.event.Event): L'événement pygame à traiter.
+        @param posMouse (tuple): La position actuelle de la souris (x, y).
+
+        Returns:
+        @return int  L'indice de l'option choisie, -1 si aucune option n'est choisie.
+        """
         self.menu_active = self.rect.collidepoint(posMouse)
         
         for i in range(len(self.Listeoptions)):

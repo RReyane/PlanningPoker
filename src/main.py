@@ -28,6 +28,12 @@ def get_font(taille):
    return pygame.font.Font("assets/font/Browood-Regular.ttf", taille)
 
 def lireBacklog():
+   """
+    Lit les données du fichier JSON du backlog.
+
+    Returns:
+      @return list  Liste contenant les informations de chaque élément du backlog.
+    """
    #Lire le json
    with open('./json/backlog.json', 'r') as file:
       data = json.load(file)
@@ -50,6 +56,17 @@ def lireBacklog():
    return backlog_items
 
 def saveJson(backlog_items,listeJoueurs,typeJeu,indexFeature,votes):
+   """
+   Sauvegarde les données du planning poker dans un fichier JSON.
+
+   Args:
+   @param backlog_items (list): Liste contenant les informations de chaque élément du backlog.
+   @param listeJoueurs (list): Liste des joueurs participant au planning poker.
+   @param typeJeu (int): Type de jeu (0: strict, 1: moyenne, 2: majorité relative).
+   @param indexFeature (int): Indice de la fonctionnalité courante dans le backlog.
+   @param votes (list): Liste des votes attribués à chaque fonctionnalité.
+    """
+   
    data = {}
 
    match typeJeu:
@@ -90,6 +107,13 @@ def saveJson(backlog_items,listeJoueurs,typeJeu,indexFeature,votes):
        json.dump(data, file, indent=4)
 
 def Parametres():
+   """
+   Fonction gérant la fenêtre des paramètres du jeu.
+
+   Returns:
+   @return None
+    """
+   
    input_box = InputBox(45,80,300,60,get_font(40))
    liste_joueur = []
    dropDown_typeJeu = DropDown(45,335,300,60,get_font(40),"Choisir mode",["strict","moyenne","majoriteRelat"])
@@ -155,6 +179,13 @@ def Parametres():
       pygame.display.flip()
 
 def Charger():
+   """
+   Charge les données d'une sauvegarde du planning poker depuis un fichier JSON.
+
+   Returns:
+   @return None
+    """
+   
    with open('./json/sauvegardePlanningPoker.json', 'r') as file:
       data = json.load(file)
 
@@ -177,6 +208,20 @@ def Charger():
    Game(joueurs,typeJeu,indexFeature,votes,backlog_items)
 
 def Game(Joueurs, TypeJeu, activeTask=0,listeVoteChoisie = [],backlog=None):
+   """
+   Fonction principale gérant le déroulement du jeu.
+
+   Args:
+   @param Joueurs (list): Liste des noms des joueurs.
+   @param TypeJeu (int): Type de jeu (0: strict, 1: moyenne, 2: majorité relative).
+   @param activeTask (int): Indice de la tâche actuelle dans le backlog.
+   @param listeVoteChoisie (list): Liste des votes attribués à chaque tâche.
+   @param backlog (list): Liste des tâches à évaluer.
+
+   Returns:
+   @return None
+   """
+   
    ListeObjJoueurs= []
    for joueur in Joueurs:
       ListeObjJoueurs.append(player(joueur))
@@ -303,8 +348,17 @@ def Game(Joueurs, TypeJeu, activeTask=0,listeVoteChoisie = [],backlog=None):
 
       pygame.display.flip()
 
-
 def Discussion(listeJoueur,tour1=False):
+   """
+   Affiche l'écran de discussion où les joueurs peuvent discuter de leurs choix de cartes.
+
+   Args:
+   @param listeJoueur (list): Liste des joueurs participant à la discussion.
+   @param tour1 (bool): Indique si c'est le tour 1 ou non.
+
+   Returns:
+   @return None
+    """
    Discute = True
    dict_carte = {0:'0',1:'1',2:'2',3:'3',4:'5',5:'8',6:'13',7:'20',8:'40',9:'100',10:'?'}
    while Discute:
